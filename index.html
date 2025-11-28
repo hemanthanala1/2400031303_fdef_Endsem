@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Birthday Reminder</title>
+</head>
+
+<body>
+    <div id="birthday-reminder" style="font-size:1.5em;color:#2d7a2d;margin:20px 0;"></div>
+    <script>
+        // List of students with DOB
+        const students = [
+            { name: "Ravi", dob: "2003-11-28" },
+            { name: "Anu", dob: "2004-05-12" },
+            { name: "Kiran", dob: "2003-11-28" }
+        ];
+
+        // Function to check birthdays
+        function checkBirthdays() {
+            const today = new Date();
+            const tDay = today.getDate();
+            const tMonth = today.getMonth() + 1; // Months start from 0
+            let found = false;
+            students.forEach(student => {
+                const dob = new Date(student.dob);
+                const dDay = dob.getDate();
+                const dMonth = dob.getMonth() + 1;
+                if (dDay === tDay && dMonth === tMonth) {
+                    showNotification(student.name);
+                    showOnPage(student.name);
+                    found = true;
+                }
+            });
+            if (!found) {
+                document.getElementById('birthday-reminder').textContent = '';
+            }
+        }
+
+        // Show browser notification
+        function showNotification(name) {
+            try {
+                if (Notification.permission === "granted") {
+                    new Notification(`🎉 Birthday Reminder`, {
+                        body: `Today is ${name}'s Birthday!`,
+                        icon: "https://cdn-icons-png.flaticon.com/512/2921/2921822.png"
+                    });
+                } else if (Notification.permission !== "denied") {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === "granted") {
+                            new Notification(`🎉 Birthday Reminder`, {
+                                body: `Today is ${name}'s Birthday!`,
+                                icon: "https://cdn-icons-png.flaticon.com/512/2921/2921822.png"
+                            });
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('Notification error:', e);
+            }
+        }
+
+        // Show reminder on the page
+        function showOnPage(name) {
+            document.getElementById('birthday-reminder').textContent = `🎉 Today is ${name}'s Birthday!`;
+        }
+
+        // Call the function
+        // Show a notification every time the website is opened
+        function showWelcomeNotification() {
+            if ("Notification" in window) {
+                if (Notification.permission === "granted") {
+                    new Notification("Welcome!", {
+                        body: "You have opened the Birthday Reminder website.",
+                        icon: "https://cdn-icons-png.flaticon.com/512/2921/2921822.png"
+                    });
+                } else if (Notification.permission !== "denied") {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === "granted") {
+                            new Notification("Welcome!", {
+                                body: "You have opened the Birthday Reminder website.",
+                                icon: "https://cdn-icons-png.flaticon.com/512/2921/2921822.png"
+                            });
+                        }
+                    });
+                }
+            }
+        }
+
+        if ("Notification" in window) {
+            showWelcomeNotification();
+            checkBirthdays();
+        } else {
+            document.getElementById('birthday-reminder').textContent = "This browser does not support notifications.";
+        }
+    </script>
+
+</body>
+
+</html>
